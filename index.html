@@ -13,36 +13,39 @@
         h1 {
             color: #333;
         }
-        #Bandyer-bandyer-chat-widget .Bandyer-widget-container {
-            position: fixed !important;
-            /* Ensure the element is positioned relative to the viewport */
-            bottom: 90% !important;
-            /* Align the element vertically in the center */
-            right: 50% !important;
-            /* Align the element horizontally in the center */
-            transform: translate(50%, 50%) !important;
-            /* Correct the alignment offset */
-            display: flex !important;
-            flex-direction: column !important;
-            z-index: 99999999 !important;
-            pointer-events: none !important;
-            margin: 0 !important;
-            /* Remove any margin to ensure accurate centering */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .assistance-label {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #000;
+        }
+        .call-button {
+            background-color: #fff;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
         }
     </style>
-    <script>
-    var openChat = function() {
-      var iframe = document.getElementById('iframeId');
-      var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-      innerDoc.getElementById("botlibrechatboxbarmax").click();
-    };
-  </script>
 </head>
 <body>
 
+<div class="container">
+    <div class="assistance-label">Need Assistance?</div>
+    <button class="call-button" id="callButton">Start Video Call</button>
+</div>
+
 <script src="https://cdn.bandyer.com/sdk/js/chat/2.9.1/bandyer-widget.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-
     const config = {
         userId: 'customer2', // Can be dynamically set or retrieved
         appId: 'wAppId_29ae91e86bca311761cd7d94e49011dd711d97b594d4f1392d2f20b59be0', // Externalize this value
@@ -85,7 +88,16 @@
             region: config.region,
             environment: config.environment,
             tools: {
-                chat: true // Choose your tools configuration
+                chat: true,
+                screen_sharing: true,
+                whiteboard: {
+                    wb_add_file: true,
+                    wb_cursor: true,
+                    wb_text: true,
+                    wb_shape: true,
+                    wb_pen: true,
+                    wb_eraser: true
+                }
             }
         });
 
@@ -102,6 +114,19 @@
                 await Client.disconnect();
                 const newAccessToken = await retrieveAccessToken(config.region, config.environment, config.userId, config.apiKey);
                 await Client.connect(config.userId, newAccessToken);
+            });
+
+            // Hide the widget
+            Client.hideWidget();
+
+            // Start video call when button is clicked
+            document.getElementById('callButton').addEventListener('click', async function() {
+                try {
+                    const callView = Client.createCall(['agent2'], { call_type: 'audio_video' });
+                    callView.start(); // Start the call with video and audio
+                } catch (error) {
+                    console.error('Error starting the video call:', error);
+                }
             });
 
         } catch (error) {

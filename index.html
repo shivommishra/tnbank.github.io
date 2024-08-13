@@ -30,6 +30,13 @@
             /* Remove any margin to ensure accurate centering */
         }
     </style>
+    <script>
+    var openChat = function() {
+      var iframe = document.getElementById('iframeId');
+      var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+      innerDoc.getElementById("botlibrechatboxbarmax").click();
+    };
+  </script>
 </head>
 <body>
 

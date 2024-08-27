@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Sharing</title>
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+            display: none; /* Hide the map initially */
+        }
+        #shareBtn {
+            margin-top: 20px;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Location Sharing</h1>
+    <button id="checkBtn" onclick="checkLocation()">Locate Me</button>
+    <button id="shareBtn" onclick="shareLocation()" disabled>Share My Spot</button>
+    <p id="location"></p>
+    <div id="map"></div>
+
+    <script>
+        let latitude, longitude;
+
+        function checkLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("location").innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+            const locationURL = `https://www.google.com/maps?q=${latitude},${longitude}&output=embed`;
+            
+            document.getElementById("location").innerHTML = 
+                `Latitude: ${latitude} <br> Longitude: ${longitude}`;
+            
+            document.getElementById("map").style.display = "block";
+            document.getElementById("map").innerHTML = 
+                `<iframe src="${locationURL}" width="100%" height="500" frameborder="0" style="border:0;" allowfullscreen></iframe>`;
+
+            // Enable the share button after the user verifies the location
+            document.getElementById("shareBtn").disabled = false;
+        }
+
+        function shareLocation() {
+            const shareURL = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            alert(`Your location is: ${shareURL}`);
+            // Here you can also implement functionality to actually share the URL via email, messaging, etc.
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("location").innerText = "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("location").innerText = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("location").innerText = "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("location").innerText = "An unknown error occurred.";
+                    break;
+            }
+        }
+    </script>
+
+</body>
+</html>
